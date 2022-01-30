@@ -42,9 +42,15 @@ $ roslaunch final_assignment_controller final_assignment_sim.launch
 $ roslaunch final_assignment_controller final_assignment_sim.launch
 ```
 ### About the simulator and the algorithms
-After running the simulation node as shown above, a circuit and a robot inside it will appear on the screen. The simulator itself makes some topics and services available for the control of the robot. As regards the topics, two of them are mainly used in the proposed solution:
-* `/base_scan`: topic on which the simulation node publishes the output of the robot laser scanners. The type of message sent on this topic is `sensor_msgs/LaserScan` and consists in several fields. Among them, the `ranges` field, which is a vector that contains the distances of the robot from the walls in an angular range from 0 to 180 degrees, will be exploited.
-* `/cmd_vel`: topic to which the simulation node is subscribed in order to receive commands to set the robot linear and angular velocity. The type of message sent on this topic is `geometry_msgs/Twist` and consists in two fields. They both are three dimensional vectors, but one specifies the linear velocity of the robot, the other its angular velocity. Among the elements of these two vectors the `x` component of the linear vector and the `z` component of the angular vector will be used in order to guide the robot along the circuit.
+This assignment heavily relies on four software facilities
+* `Gazebo`: Gazebo is an open-source 3D robotic simulator integrated into ROS that has the ability to accurately and effciently simulate populations of robots in complex indoor and outdoor environments. In the considered case, a 3D mobile robot is spawned inside an indoor environment composed of different rooms. The rooms and the environment are delimited by walls.  
+For controlling the robot the simulator makes some topics and services available. As regards the topics, two of them are mainly used in the proposed solution:
+  * `/scan`: topic on which the simulation node publishes the output of the robot laser scanners. The type of message sent on this topic is `sensor_msgs/LaserScan` and consists in several fields. Among them, the `ranges` field, which is a vector that contains the distances of the robot from the walls in an angular range from 0 to 180 degrees, will be exploited.
+  * `/cmd_vel`: topic to which the simulation node is subscribed in order to receive commands to set the robot linear and angular velocity. The type of message sent on this topic is `geometry_msgs/Twist` and consists in two fields. They both are three dimensional vectors, but one specifies the linear velocity of the robot, the other its angular velocity. Among the elements of these two vectors the `x` component of the linear vector and the `z` component of the angular vector will be used in order to guide the robot along the circuit.
+
+* `Rviz`: Rviz is a 3D visualization tool for ROS that interacts with Gazebo
+* `gmapping`: gmapping
+* `move_base`
 
 As for the built-in services of the simulation node instead, only one of them will be taken in consideration:
 * `/reset_position`: service provided by the `stageros` node that acts as a server node. The type of service message used for the service at issue is `std_srvs/Empty`. As the name suggests, every client node can issue an empty service request to the server in order to reset the robot position. Once the server finishes taking care of this operation, it sends back to the client an empty service response.
