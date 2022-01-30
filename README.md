@@ -1,13 +1,10 @@
 # Third Reasearch Track 1 Assignment
-The folder in which this README is contains two ROS packages, one named `second_assignment`, the other named `second_assignment_controller`. The first package is just composed by a folder, a text file and a file with extension .xml:
-* `world`: folder that contains information about the characteristics of the world that is run in the simulator
-* `CMakeLists.txt`: text file that describes how to build the code and where to install it to
-* `package.xml`: XML file that defines properties about the package such as the package name, version numbers, authors, maintainers, and dependencies on other catkin packages  
+The repository in which this README is contains a ROS package, named `final_assignment_controller` and composed by four folders, a text file and a file with extension .xml: 
 
-Inside the second package there are instead three folders, a text file and a file with extension .xml:
 * `include`: folder for the management of included packages (not used)
-* `src`: folder that contains two C++ scripts (`robot_controller.cpp` and `robot_gui.cpp`) implementing two nodes: one whose aim is to control the robot and to carry out some operations under request; the other whose aim is to interact with the user and to send requests to the first one
-* `srv`: folder that contains a custom ROS service (`ChangeVel.srv`) whose aim is to make the two previously-mentioned nodes communicate
+* `launch`: folder that contains two launch files (`final_assignment_sim.launch` and `control_architecture.launch`): one whose aim is to launch the simulation environment and both the SLAM and path planning algorithms; the other whose aim is to launch the implemented control architecture
+* `scripts`: folder that contains two python scripts (`robot_gui.py` and `teleop_mediator.py`) realizing two nodes: one whose aim is to interact with the user, to implement the first modality for driving the robot and to send requests to the second node; the other whose aim is to implement the second and third modality for driving the robot under request
+* `srv`: folder that contains a custom ROS service (`ChangeMod.srv`) whose aim is to make the two previously-mentioned nodes communicate
 * `CMakeLists.txt`: text file that describes how to build the code and where to install it to
 * `package.xml`: XML file that defines properties about the package such as the package name, version numbers, authors, maintainers, and dependencies on other catkin packages
 
