@@ -56,8 +56,13 @@ For controlling the robot the simulator makes some topics and services available
 
 * `teleop_twist_keyboard (node)`: the teleop_twist_keyboard node is nothing more than a GUI that allows the user to drive a simulated mobile robot by means of the keyboard. In other words, when the user presses certain keys, the node publishes the corresponding velocities on the `cmd_vel` topic made available by the simulator. 
 
-## Nodes goal
-As stated above, the simulation environment opened by the `stageros` node is a circuit delimited by walls. The simulated robot is spawned inside this perimeter near its bottom-right corner. Among the two implemented nodes, the goal of the controller node is to guide the robot along the path in clockwise direction, making sure that it does not collide with the walls. Furthermore it should meet the requests of the other node and send to it responses. Whereas the GUI node is aimed at constantly asking and waiting for an input from the user, which can either ask to increment or decrement the velocity, or to put the robot in the initial position. Once an input has been detected, it should then issue a correspondent request to the first node. The final behaviour of the robot should therefore be to autonomously drive between the walls and to increment/decrement its velocities or resetting its position under the request of the user.
+## Software architecture goal
+The software architecture goal is to interact with the user and, according to the user request, to control the robot in the environment. In particular, the architecture should make available to the user three different control modalities:
+* 1st modality: autonomous navigation to a user-defined target position
+* 2nd modality: keyboard-guided navigation
+* 3rd modality: keyboard-guided navigation (with assistance in order to avoid collisions)
+
+Concerning this last modality, the robot should not go forward if there is an obstacle in front of it; should not turn left/right if there are obstacles on its left/right. 
 
 ## Implementation - description
 Since the primary goal of the robot is to avoid colliding with the walls, first of all the robot should check if there are walls at a dangerous distance. Then, if the answer is yes, it will be instructed to change the direction of its motion according to the position of the critical obstacle.  
