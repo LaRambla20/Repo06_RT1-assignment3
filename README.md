@@ -9,34 +9,39 @@ The repository in which this README is contains a ROS package, named `final_assi
 * `package.xml`: XML file that defines properties about the package such as the package name, version numbers, authors, maintainers, and dependencies on other catkin packages
 
 ## How to install and run
-The installation of the two packages contained in this repository is carried out by following these two simple steps:
-* clone this remote repository in the `src` folder of your ROS workspace with the command:
+In order to make use of the package contained in this repository, other two packages are needed. Those are:
+* `slam_gmapping` package: which can be obtained by cloning in the `src` folder of your ROS workspace the following github repository https://github.com/CarmineD8/slam_gmapping (after cloning, remember to checkout to the branch corresponding to your ROS distribution)
+* `final_assignment` package: which can be obtained by cloning in the `src` folder of your ROS workspace the following github repository https://github.com/CarmineD8/final_assignment (after cloning, remember to checkout to the branch corresponding to your ROS distribution)  
+
+It is also necessary to check if the `ROS navigation stack` is installed in your machine. If not, run the following command from terminal:
 ```bash
-$ git clone https://github.com/LaRambla20/Repo04_RT1-assignment2.git
+$ sudo apt-get install ros-<your_ros_distribution>-navigation
 ```
-* build your ROS workspace with the command:
+The same thing holds for the `teleop_twist_keyboard` package. If it is not installed, run the command:
+```bash
+$ sudo apt-get install ros-<your_ros_distribution>-teleop-twist-keyboard
+```
+
+That been said, as far as the package contained in this repository is concerned, it can be obtained by simply cloning the current repository in the `src` folder of your ROS workspace (no checkout to other branches is needed).
+
+Once that all the required packages has been downloaded correctly, execute the following line to build your ROS workspace:
 ```bash
 $ catkin_make
 ```
-As far as the execution is concerned, since in ROS all nodes need the core node to be active and running, the first thing to do is to open the terminal, move to the ROS workspace and execute the command:
+Regarding the execution, two launch files has been written:
+* `final_assignment_launch.launch`: launch file, contained in the implemented package, that simply includes two launch files from the auxiliary package `final_assignment`(`simulation_gmapping.launch` and `move_base.launch`). The first one of these two runs both the simulation (in Gazebo) and the SLAM algorithm (gmapping), the second one runs the path planning algorithm (move_base).
+* `control_architecture.launch`: launch file, contained in the implemented package, that runs three nodes: `robot_gui.py` and `teleop_mediator.py`, that are the two developed nodes, and `teleop_twist_keyboard_node`, that is part of the previously installed package. The last node is run in a separate terminal window.
+
+In order to launch these launch files:
+* open a terminal window, navigate to your ROS workspace and run the following line:
 ```bash
-$ roscore &
+$ roslaunch final_assignment_controller final_assignment_sim.launch
 ```
-The '&' forces the terminal to run the core node in background. Once the shell finishes executing it, press 'enter' to write the next instruction.
-As noted above, in the proposed solution to the second assignment two main nodes are used. In order to see their effects, a simulator should be run first. The simulator at issue is nothing more than a node, which is called `stageros` and contained in the built-in ROS package: `stage_ros`. The command to run it is the following:
+* open another terminal window, navigate to your ROS workspace and execute:
 ```bash
-$ rosrun stage_ros stageros $(rospack find second_assignment)/world/my_world.world
+$ roslaunch final_assignment_controller final_assignment_sim.launch
 ```
-As it can be seen from the command, in addition to the instruction to properly launch the simulation node, another file is linked. That is the file, contained in the `second_assignment` package, that specifies the properties of the simulated world.
-Once the simulator is running, the robot_controller_node can be executed. In order to do that another terminal window should be opened and the following line should be entered:
-```bash
-$ rosrun second_assignment_controller robot_controller_node
-```
-Finally the last thing to do is to run the GUI node, again by opening another shell window and by executing the command:
-```bash
-$ rosrun second_assignment_controller robot_gui_node
-```
-### About the Simulator: stageros node
+### About the simulator and the algorithms
 After running the simulation node as shown above, a circuit and a robot inside it will appear on the screen. The simulator itself makes some topics and services available for the control of the robot. As regards the topics, two of them are mainly used in the proposed solution:
 * `/base_scan`: topic on which the simulation node publishes the output of the robot laser scanners. The type of message sent on this topic is `sensor_msgs/LaserScan` and consists in several fields. Among them, the `ranges` field, which is a vector that contains the distances of the robot from the walls in an angular range from 0 to 180 degrees, will be exploited.
 * `/cmd_vel`: topic to which the simulation node is subscribed in order to receive commands to set the robot linear and angular velocity. The type of message sent on this topic is `geometry_msgs/Twist` and consists in two fields. They both are three dimensional vectors, but one specifies the linear velocity of the robot, the other its angular velocity. Among the elements of these two vectors the `x` component of the linear vector and the `z` component of the angular vector will be used in order to guide the robot along the circuit.
