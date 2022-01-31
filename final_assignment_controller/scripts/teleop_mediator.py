@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 
-import rospy # to use ros functionalities
-from geometry_msgs.msg import Twist
-from sensor_msgs.msg import LaserScan
-from final_assignment_controller.srv import ChangeMod, ChangeModResponse
+import rospy # import rospy to use ros functionalities
+from geometry_msgs.msg import Twist # import the type of message that is exchanged both on the /cmd_vel topic and on the /check_vel topic
+from sensor_msgs.msg import LaserScan # import the type of message that is exchanged on the /scan topic
+from final_assignment_controller.srv import ChangeMod, ChangeModResponse # import both the request message type and the response message type of the ChangeMod.srv custom service
 
 # Publisher
-pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
+pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1) # initialize and define the publisher that publishes on the /cmd_vel topic
 
 # GLOBAL CONSTANTS
 
@@ -32,6 +32,7 @@ i = 0
 
 # SERVICE CALLBACK
 
+# function that is called every time that a new client request related to the /change_mod service is received
 def clbk_changemod_srv(req):
     global mod
     global vel 
@@ -47,6 +48,7 @@ def clbk_changemod_srv(req):
 
 # TOPIC CALLBACKS
 
+# function that is called every time that a new message is published on the /scan topic
 def clbk_laser(msg):
     global regions_
     global vel
@@ -89,6 +91,7 @@ def clbk_laser(msg):
             # rospy.loginfo("\nThe imposed velocity is:\n - lin: %f\n - ang: %f ;", vel.linear.x, vel.angular.z)
 
 
+# function that is called every time that a new message is published on the /check_vel topic
 def clbk_velocity(msg):
     global vel
     global i
@@ -114,17 +117,17 @@ def clbk_velocity(msg):
 
 def main():
 
-    rospy.init_node('teleop_mediator_node')
+    rospy.init_node('teleop_mediator_node') # initialize the node with the name 'teleop_mediator_node'
 
-    rospy.Subscriber('/scan', LaserScan, clbk_laser)
-    rospy.Subscriber('/check_vel', Twist, clbk_velocity)
+    rospy.Subscriber('/scan', LaserScan, clbk_laser) # initialize and define the subscriber that subscribes to the "/scan" topic and assign the "clbk_laser" call-back function to it 
+    rospy.Subscriber('/check_vel', Twist, clbk_velocity) # initialize and define the subscriber that subscribes to the "/check_vel" topic and assign the "clbk_velocity" call-back function to it
 
-    srv = rospy.Service('change_mod', ChangeMod, clbk_changemod_srv)
+    srv = rospy.Service('/change_mod', ChangeMod, clbk_changemod_srv) # initialize and define the server that answers to requests belonging to the "/change_mod" service and assign the "clbk_changemod_srv" call-back function to it
     
-    rospy.spin()
+    rospy.spin() # spin to allow the call-back functions to be called whenever a message arrives on the correspondent topic or service
 
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': # if this node is run directly:
     main()

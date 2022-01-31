@@ -1,16 +1,16 @@
 #! /usr/bin/env python
 
-import rospy # to use ros functionalities
-from move_base_msgs.msg import MoveBaseActionGoal
-from actionlib_msgs.msg import GoalID
-from final_assignment_controller.srv import ChangeMod, ChangeModResponse
+import rospy # import rospy to use ros functionalities
+from move_base_msgs.msg import MoveBaseActionGoal # import the type of message that is exchanged on the /move_base/goal topic
+from actionlib_msgs.msg import GoalID # import the type of message that is exchanged on the /move_base/cancel topic
+from final_assignment_controller.srv import ChangeMod, ChangeModResponse # import both the request message type and the response message type of the ChangeMod.srv custom service
 
 # Publishers
-pub1 = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=1)
-pub2 = rospy.Publisher('/move_base/cancel', GoalID, queue_size=1)
+pub1 = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=1) # initialize and define the publisher that publishes on the /move_base/goal topic
+pub2 = rospy.Publisher('/move_base/cancel', GoalID, queue_size=1) # initialize and define the publisher that publishes on the /move_base/cancel topic
 
 # Client
-change_mod = rospy.ServiceProxy('change_mod', ChangeMod)
+change_mod = rospy.ServiceProxy('/change_mod', ChangeMod) # initialize and define the client that sends requests belonging to the /change_mod service
 
 
 # GLOBAL VARIABLES
@@ -22,17 +22,7 @@ msg2 = GoalID()
 
 # AUXILIARY FUNCTIONS
 
-def switch_to_mod(num):
-    global change_mod
-
-    rospy.wait_for_service('change_mod')
-    try:
-        res = change_mod(num)
-        # print(res)
-    except rospy.ServiceException as e:
-        print("Service call failed: %s" %e)
-
-
+# function that is called to set a goal position by publishing on the /move_base/goal topic
 def set_goal_position(x, y):
     global msg1
     global pub1
@@ -43,14 +33,28 @@ def set_goal_position(x, y):
     msg1.goal.target_pose.pose.position.y = y
     pub1.publish(msg1)
 
+# function that is called to cancel the previously-set goal position by publishing on the /move_base/cancel topic
 def cancel_goal_position():
     global msg2
     global pub2
 
+    msg2.id = ""
+
     pub2.publish(msg2)
 
+# function that is called to send a request related to the /change_mod service to the server
+def switch_to_mod(num):
+    global change_mod
 
-# MAIN FUNCTION
+    rospy.wait_for_service('/change_mod')
+    try:
+        res = change_mod(num)
+        # print(res)
+    except rospy.ServiceException as e:
+        print("Service call failed: %s" %e)
+
+
+# MAIN FUNCTION (GUI)
 
 def main():
 
@@ -58,9 +62,9 @@ def main():
     
     print('\033[93m' + "\n============================================================================\n" + '\033[0m')
     print('\033[93m' + "MODALITIES LEGEND:\n" + '\033[0m')
-    print('\033[93m' + " - Modality 1: autonomous navigation to a user-defined target\n" + '\033[0m')
+    print('\033[93m' + " - Modality 1: autonomous navigation to a user-defined target position\n" + '\033[0m')
     print('\033[93m' + " - Modality 2: keyboard-guided navigation\n" + '\033[0m')
-    print('\033[93m' + " - Modality 3: keyboard-guided navigation with assisted obstacle avoidance\n" + '\033[0m')
+    print('\033[93m' + " - Modality 3: keyboard-guided navigation (with assistance in order to\n avoid collisions)\n" + '\033[0m')
     print('\033[93m' + "============================================================================" + '\033[0m')
 
     while(1):
@@ -110,5 +114,5 @@ def main():
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': # if this node is run directly:
     main()
