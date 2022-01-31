@@ -65,19 +65,19 @@ The software architecture goal is to interact with the user and, according to th
 Concerning this last modality, the robot should not go forward if there is an obstacle in front of it; should not turn left/right if there are obstacles on its left/right. 
 
 ## Implementation - description
-After the launch two terminal windows are spawned, the first one running the teleop_twist node, the other one running both the robot_gui node and the teleop_mediator node. 
-The gui_node prints on the terminal a simple GUI that shows the modalities legend
-Depending on the user input these are the possible scenarios:
+After the launch of the software architecture two terminal windows are spawned: the first one running the teleop_twist node, the other one running both the robot_gui node and the teleop_mediator node.  
+The gui_node prints on the terminal a simple GUI that shows the modalities legend. Depending on the user input these are the possible scenarios:
 * `1`: the first modality is chosen. The user can either enter the character 'r' to come back to the original menu or the character 'y' to issue a target position. In this second case, the gui_robot node asks for the coordinates of the position and sends it to the move_base node via the `/move_base/goal` topic. Once the position has been inserted, the user returns to the initial selection (insert 'r' or 'y').
-* `2`: the second modality is chosen. A request of the custom service `ChangeMod` containing the string "2" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the second modality. This simply means that it retrieves the velocities published by the teleop_twist node on the remapped topic `/check_vel` and, in its turn, publishes them on the `/cmd_vel` topic. In this case the velocities are simply forwarded and no modification is made. The user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.
-* `3`: the third modality is chosen. A request of the custom service `ChangeMod` containing the string "3" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the third modality. This means that the node at issues carries out the following tasks:
-  * it retrieves the velocities published by the teleop_twist node on the remapped topic `/check_vel`.
-  * either if there are no obstacles in the way or if there are obstacles but the robot is instructed to go in another direction, the node publishes the retrieved velocities on the `/cmd_vel` topic.
-  * otherwise, if there are obstacles in the way and the robot is instructed to go against them, the node publishes both a null linear velocity and a null angular velocity on the `/cmd_vel` topic.  
-The user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.
+* `2`: the second modality is chosen. A request of the custom service `ChangeMod` containing the string "2" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the second modality. This simply means that it retrieves the velocities published by the teleop_twist_keyboard node on the remapped topic `/check_vel` and, in its turn, publishes them on the `/cmd_vel` topic. In this case the velocities are simply forwarded and no modification is made. The user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.
+* `3`: the third modality is chosen. A request of the custom service `ChangeMod` containing the string "3" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the third modality. As in the previous case the user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.  
+The third modality implies that the server node carries out the following tasks:
+  * it retrieves the velocities published by the teleop_twist_keyboard node on the remapped topic `/check_vel`.
+  * either if there are no obstacles in the way or if there are obstacles but the robot is instructed to go in another direction, the node publishes the retrieved velocities on the `/cmd_vel` topic (the information about the obstacles is obtained from the `/scan` topic).
+  * otherwise, if there are obstacles in the way and the robot is instructed to go against them, the node publishes both a null linear velocity and a null angular velocity on the `/cmd_vel` topic (the information about the obstacles is obtained from the `/scan` topic).  
 * `q`: the robot_gui node exits and all the other nodes with it, thanks to the `required` attribute associated to it in the launch file
 
-If the string entered is not among these commands, the request for an input is reiterated.
+If the string entered is not among these commands, the request for an input is reiterated.  
+In order to better understand the structure of the control architecture, the following simplified scheme is provided:
 
 ## Implementation - controller node code
 The C++ script related to the controller node is composed of a main function, 2 call-back functions and 2 "regular" functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_vel` is issued by the client. The second one refers instead to the subscriber task accomplished by the node and is called every time that a message is published on the `/base_scan` topic.
