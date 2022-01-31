@@ -155,9 +155,9 @@ def cancel_goal_position():
 
 The third auxiliary function can be described in pseudocode as follows:
 ```python
-def switch_to_mod(mod):
+def switch_to_mod(num):
 	check if the server related to the "change_mod" custom service is up and running
-	call the server by issuing a request message containing mod (number of the desired modality in form of a string)
+	call the server by issuing a request message containing num (number of the desired modality in form of a string)
 	if an exception is raised during the call
 		print a warning message on the screen
 ```
