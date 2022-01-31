@@ -107,8 +107,8 @@ def main ():
 						if the coordinates are numbers 
 							break the loop
 						else:
-							print a warning on the screen
-					call the set_goal_position() function
+							print a warning message on the screen
+					call the set_goal_position() function passing as arguments the coordinates of the entered target position 
 
 				if the entered string is "r":
 					call the cancel_goal_position() function
@@ -129,125 +129,37 @@ def main ():
 	quit the node
 ```
 
-### Call-back functions
-The first callback function can be described in pseudocode as follows:
-```cpp
-bool obtaincoeffCallback (request message related to the service "/change_vel", response message related to the service "/change_vel"){
-	if the request message is the command "s"
-		if both cefficients are 0
-			assign 1 to both the coefficents
-			fill the response message with "motion started"
-		else
-			fill the response message with a warning
-
-	else if the request message is the command "d"
-		if the coefficient related to the linear velocity is 0
-			fill the response message with a warning
-		else
-			multiply the coefficient related to the linear velocity by 1.5
-			fill the response message with "linear velocity incremented"
-
-	else if the request message is the command "a"
-		if the coefficient related to the linear velocity is 0
-			fill the response message with a warning
-		else
-			divide the coefficient related to the linear velocity by 1.5
-			fill the response message with "linear velocity decremented"
-
-	else if the request message is the command "c"
-		if the coefficient related to the angular velocity is 0
-			fill the response message with a warning
-		else
-			multiply the coefficient related to the angular velocity by 1.2
-			fill the response message with "angular velocity incremented"
-
-	else if the request message is the command "z"
-		if the coefficient related to the angular velocity is 0
-			fill the response message with a warning
-		else
-			divide the coefficient related to the angular velocity by 1.2
-			fill the response message with "angular velocity decremented"
-
-	else if the request message is the command "r"
-		assign 0 to both the coefficents
-		fill the response message with "position and velocities reset"
-}
-```
-The second callback function can be described in pseudocode as follows:
-```cpp
-void robotCallback(message retrieved by the "/base_scan" topic){
-	divide the "ranges" field of the message in 5 subvectors, one for each region
-	call the "find_minimum" function to retrieve the minimum distance from the walls for each one of the 5 regions
-	print on the screen the obtained minimum distances
-	call the "change_direction" function to set the velocities of the robot according to the position of the walls at a dangerous distance and to retrieve the current state and substate
-	print on the screen the obtained state and substate
-	publish on the "/cmd_vel" topic the velocities set by the "change_direction" function call
-}
-```
-### "Regular" functions
-The first "regular" function can be described in pseudocode as follows:
-```cpp
-float find_minimum (vector of floats, size of the vector){
-	find the minimum value among the elements of the vector passed as input
-	return the retrieved minimum element
-}
-```
-The second "regular" function can be described in pseudocode as follows:
-```cpp
-vector of strings change_direction (vector of floats, pointer to the linear velocity of the robot, pointer to the angular velocity of the robot){
-	initialize the substate description
+### Auxiliary functions
+The first auxiliary function can be described in pseudocode as follows:
+```python
+def set_goal_position(x, y):
+	make use of a message of type MoveBaseActionGoal defined as a global variable
 	
-	if there is no obstacle at a dangerous distance
-		update the state description
-		go straight
+	within the message set the frame with respect to which the target position is defined to map frame
+	within the message set the orientation of the target position to 1
+	within the message set the x coordinate of the target position to the passed x
+	within the message set the y coordinate of the target position to the passed y
+	
+	publish the message
+```
 
-	else if there is an obstacle at a dangerous distance in the front region
-		update the state description
-		if there is an obstacle at a dangerous distance in the right region
-			update the substate description
-			turn left
-		else if there is an obstacle at a dangerous distance in the left region
-			update the substate description
-			turn right
-		else
-			turn left
+The second auxiliary function can be described in pseudocode as follows:
+```python
+def cancel_goal_position():
+	make use of a message of type GoalID defined as a global variable
+	
+	within the message set the id of the goal position to cancel to "" (empty)
+	
+	publish the message
+```
 
-	else if there is an obstacle at a dangerous distance in the front-right region
-		update the state description
-		turn left
-
-	else if there is an obstacle at a dangerous distance in the front-left region
-		update the state description
-		turn right
-
-	else if there is an obstacle at a dangerous distance in both the front region and the front-right region
-		update the state description
-		turn left
-
-	else if there is an obstacle at a dangerous distance in both the front region and the front-left region
-		update the state description
-		turn right
-
-	else if there is an obstacle at a dangerous distance in both the front region, the front-right region and the front-left region
-		update the state description
-		if there is an obstacle at a dangerous distance in the right region
-			update the substate description
-			turn left
-		else if there is an obstacle at a dangerous distance in the left region
-			update the substate description
-			turn right
-		else
-			turn left
-
-	else if there is an obstacle at a dangerous distance in both the front-right region and the front-left region
-		update the state description
-		go straight
-		
-	else
-		update the state description
-
-	return a vector containing both the state description and the substate description
-}
+The third auxiliary function can be described in pseudocode as follows:
+```python
+def switch_to_mod(mod):
+	check if the server related to the "change_mod" custom service is up and running
+	call the server by issuing a request message containing mod (number of the desired modality in form of a string)
+	if an exception is raised during the call
+		print a warning message on the screen
 ```
 
 ## Implementation - GUI node code
