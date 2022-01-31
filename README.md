@@ -77,22 +77,56 @@ The third modality implies that the server node carries out the following tasks:
 * `q`: the robot_gui node exits and all the other nodes with it, thanks to the `required` attribute associated to it in the launch file
 
 If the string entered is not among these commands, the request for an input is reiterated.  
-In order to better understand the structure of the control architecture, the following simplified scheme is provided:
+In order to better understand the structure of the control architecture, the following simplified scheme is provided:  
 
-## Implementation - controller node code
-The C++ script related to the controller node is composed of a main function, 2 call-back functions and 2 "regular" functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_vel` is issued by the client. The second one refers instead to the subscriber task accomplished by the node and is called every time that a message is published on the `/base_scan` topic.
+![Assignment_3-2](https://user-images.githubusercontent.com/91536387/151792336-aff06d4e-4d9e-4d73-a6de-0e9cb28bb80f.png)
+
+## Implementation - GUI node code
+The Python script related to the GUI node is composed of a main function and 3 auxiliary functions. The first two auxiliary functions refer to the publisher task carried out by the node, respectively with respect to the `/move_base/goal` topic and to the `/move_base/cancel` topic. The third one refers instead to the client task related to the custom service `ChangeMod` accomplished by the node.
 
 ### Main
 The main function can be described in pseudocode as follows:
-```cpp
-int main (arguments vector dimension, arguments vector){
-	initialize the node with the name "robot_controller_node"
-	setup the NodeHandle
-	initialize the publisher that publishes on the "/cmd_vel" topic
-	initialize and define the subscriber that subscribes to the "/base_scan" topic and assign the "robotCallback" call-back function to it
-	initialize and define the server that answers to requests belonging to the "/change_vel" service and assign the "obtaincoeffCallback" call-back function to it
-	spin to allow the call-back functions to be called whenever a message arrives on the correspondent topic or service
-}
+```python
+def main ():
+	initialize the node with the name "robot_gui_node"
+	print the instructions to interact with the node (modalities legend) on the screen
+	
+	while true:
+		ask the user for a modality or "q" to exit
+		retrieve the string entered by the user on the stdin
+
+		if the entered string is "1":
+			while true:
+				ask the user to either insert "y" (for issuing a new target position) or "r" (for retunring to the modality selection)
+				retrieve the string entered by the user on the stdin
+				
+				if the entered string is "y":
+					while true:
+						ask the user for the coordinates of the target position
+						retrieve the strings entered by the user on the stdin
+						if the coordinates are numbers 
+							break the loop
+						else:
+							print a warning on the screen
+					call the set_goal_position() function
+
+				if the entered string is "r":
+					call the cancel_goal_position() function
+					break the loop
+		
+		if the entered string is either "2" or "3":
+			while true:
+				call the switch_to_mod() function passing as an argument the string entered by the user
+				suggest to the user either to interact with the teleop_twist_keyboard node or to insert "r" (for retunring to the modality selection)
+				
+				if the entered string is "r":
+					call the switch_to_mod() function passing as an argument the string "0"
+					break the loop
+		
+		if the entered string is "q":
+			break the loop
+	
+	quit the node
 ```
 
 ### Call-back functions
@@ -217,7 +251,7 @@ vector of strings change_direction (vector of floats, pointer to the linear velo
 ```
 
 ## Implementation - GUI node code
-As regards the GUI node instead, its structure is much simpler since it consists in only the main function.
+The C++ script related to the controller node is composed of a main function, 2 call-back functions and 2 "regular" functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_vel` is issued by the client. The second one refers instead to the subscriber task accomplished by the node and is called every time that a message is published on the `/base_scan` topic.
 
 ### Main
 The main function can be described in pseudocode as follows:
