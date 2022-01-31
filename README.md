@@ -251,6 +251,7 @@ def clbk_velocity(message published on the "/check_vel" topic):
 
 ## System Limitations and Possible Improvements
 As far as the limitations of the script are concerned, the main one is that, when the first modality is selected, the user can enter a target position that is outside the considered environment and the robot will still try to accomplish it. In the proposed solution the issue is partially solved because the user can change the destination at any time. However there are certainly other solutions that allow the program to know a priori if the target position is reachable or not.  
+Another small limitation is that no message is issued on the screen when the robot reaches the desired position. This problem can be easily fixed by subscribing to the `/move_base/status` topic and define a simple call-back function that prints the termination message.  
 As regards the improvements instead, several of them could be carried out. For example:
 * more complex and fine SLAM and path-planning algorithms could be adopted.
 * the GUI implemented by the teleop_twist_keyboard node could be embedded in the robot_gui node. In this way it would be possible to interact with the GUI at issue only when either the second or the third modality is selected. Furthermore using the teleop_twist_keyboard node could be avoided.
