@@ -250,5 +250,8 @@ def clbk_velocity(message published on the remapped "/check_vel" topic):
 ```
 
 ## System Limitations and Possible Improvements
-As far as the limitations of the script are concerned, the main one is that, by increasing the velocities too much, the control of the robot might fail. In the proposed solution the GUI node issues a warning message on the screen if at least one of the velocities is too high. Another way to deal with this problem could be to simply not allow the user to increment the velocities once that they reached a certain value.  
-As regards the improvements instead, several of them could be carried out. For instance, one of them could be to allow the user to directly specify the desired velocities by means of the GUI node.
+As far as the limitations of the script are concerned, the main one is that, when the first modality is selected, the user can enter a target position that is outside the considered environment and the robot will still try to accomplish it. In the proposed solution the issue is partially solved because the user can change the destination at any time. However there are certainly other solutions that allow the program to know a priori if the target position is reachable or not.  
+As regards the improvements instead, several of them could be carried out. For example:
+* more complex and fine SLAM and path-planning algorithms could be adopted.
+* the GUI implemented by the teleop_twist_keyboard node could be embedded in the robot_gui node. In this way it would be possible to interact with the GUI at issue only when either the second or the third modality is selected. Furthermore the teleop_twist_keyboard node could be avoided.
+* when the third modality is selected and the robot motors are stopped to avoid a collision, the robot_gui node could suggest in which directions the robot could move,
