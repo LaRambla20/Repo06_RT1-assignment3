@@ -54,62 +54,30 @@ For controlling the robot the simulator makes some topics and services available
   * `/move_base/goal`: topic to which the move_base node is subscribed in order to receive commands to set a new goal position. The type of message sent on this topic is `move_base_msgs/MoveBaseActionGoal` and consists in several nested fields. Among them the ones of interest are: `goal.target_pose.frame_id` (containing the frame with respect to which the target position is defined), `goal.target_pose.pose.orientation.w` (containing the target orientation), `goal.target_pose.pose.position.x` (containing the target-position x coordinate), `goal.target_pose.pose.position.y` (containing the target-position y coordinate).
   * `/move_base/cancel`: topic to which the move_base node is subscribed in order to receive commands to cancel a goal position. The type of message sent on this topic is `action_lib_msgs/GoalID` and consists in two fields. One of them in particular is used. Its name is `id` and contains the id of the goal position to be cancelled.
 
-* `teleop_twist_keyboard (node)`: the teleop_twist_keyboard node is nothing more than a GUI that allows the user to drive a simulated mobile robot by means of the keyboard. In other words, when the user presses certain keys, the node publishes the corresponding velocities on the `cmd_vel` topic made available by the simulator. 
+* `teleop_twist_keyboard (node)`: the teleop_twist_keyboard node is nothing more than a GUI that allows the user to drive a simulated mobile robot by means of the keyboard. In other words, when the user presses certain keys, the node publishes the corresponding velocities on the `cmd_vel` topic made available by the simulator. In this particular case the `/cmd_vel` topic has been remapped in another topic called `/check_vel`, to which the teleop_mediator node is subscribed.
 
 ## Software architecture goal
 The software architecture goal is to interact with the user and, according to the user request, to control the robot in the environment. In particular, the architecture should make available to the user three different control modalities:
-* 1st modality: autonomous navigation to a user-defined target position
-* 2nd modality: keyboard-guided navigation
-* 3rd modality: keyboard-guided navigation (with assistance in order to avoid collisions)
+* `1st modality`: autonomous navigation to a user-defined target position
+* `2nd modality`: keyboard-guided navigation
+* `3rd modality`: keyboard-guided navigation (with assistance in order to avoid collisions)
 
 Concerning this last modality, the robot should not go forward if there is an obstacle in front of it; should not turn left/right if there are obstacles on its left/right. 
 
 ## Implementation - description
-Since the primary goal of the robot is to avoid colliding with the walls, first of all the robot should check if there are walls at a dangerous distance. Then, if the answer is yes, it will be instructed to change the direction of its motion according to the position of the critical obstacle.  
-As far as the detection task is concerned, the output of the laser scanner is used. As mentioned above, this information is sent on the `/base_scan` topic by the simulation node. The controller node then subscribes to the topic at issue and continuously checks the messages sent on it. In particular the field of interest is named `ranges` and contains 720 elements that are the distances between the robot and the walls in an angular range that goes from 0 to 180 degrees. Given the great amount of data, a basic processing of them is carried out. In order to do that, the vector is divided in 5 sub-vectors, each one defining a different region:
-* `Region 1 - right region`: region that ranges from 0 to 36 degrees
-* `Region 2 - front-right region`: region that ranges from 36 to 72 degrees
-* `Region 3 - front region`: region that ranges from 72 to 108 degrees
-* `Region 4 - front-left region`: region that ranges from 108 to 144 degrees
-* `Region 5 - left region`: region that ranges from 144 to 180 degrees
+After the launch two terminal windows are spawned, the first one running the teleop_twist node, the other one running both the robot_gui node and the teleop_mediator node. 
+The gui_node prints on the terminal a simple GUI that shows the modalities legend
+Depending on the user input these are the possible scenarios:
+* `1`: the first modality is chosen. The user can either enter the character 'r' to come back to the original menu or the character 'y' to issue a target position. In this second case, the gui_robot node asks for the coordinates of the position and sends it to the move_base node via the `/move_base/goal` topic. Once the position has been inserted, the user returns to the initial selection (insert 'r' or 'y').
+* `2`: the second modality is chosen. A request of the custom service `ChangeMod` containing the string "2" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the second modality. This simply means that it retrieves the velocities published by the teleop_twist node on the remapped topic `/check_vel` and, in its turn, publishes them on the `/cmd_vel` topic. In this case the velocities are simply forwarded and no modification is made. The user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.
+* `3`: the third modality is chosen. A request of the custom service `ChangeMod` containing the string "3" is issued by the robot_gui node that acts as a client. Once the server (teleop_mediator node) has received it, it switches to the third modality. This means that the node at issues carries out the following tasks:
+  * it retrieves the velocities published by the teleop_twist node on the remapped topic `/check_vel`.
+  * either if there are no obstacles in the way or if there are obstacles but the robot is instructed to go in another direction, the node publishes the retrieved velocities on the `/cmd_vel` topic.
+  * otherwise, if there are obstacles in the way and the robot is instructed to go against them, the node publishes both a null linear velocity and a null angular velocity on the `/cmd_vel` topic.  
+The user can return to the selection of the modality by simply entering 'r' in the robot_gui node at any time.
+* `q`: the robot_gui node exits and all the other nodes with it, thanks to the `required` attribute associated to it in the launch file
 
-This division is shown in the following picture:  
-![Robot_RT1_2](https://user-images.githubusercontent.com/91536387/145257341-ecc88710-b918-49a9-a9f0-21e75f4e2f3f.png)  
-That been done, it is convenient to identify a representative distance for each region. For this reason the minimum distance among all the distances of each region is extracted. The five retrieved values are then used to check the presence of dangerous walls within the visual field of the robot and eventually to avoid them. In particular, according to the distances belonging to the three frontal regions (`front`, `front-left` and `front-right` area), different states are defined, each one related to a different action. Critical states are then further divided in substates, by checking the two side areas:
-* `state 1 - "nothing"`: occurs if no wall is within dangerous distance. The robot is instructed to go forward.
-* `state 2 - "front"`: occurs if the minimum distance belonging to the front region is less than the threshold `DAN_DISTANCE`. Since given this information it is not really clear where the robot should turn, the side areas are checked as well and three substates are defined:
-  * `substate a - "right" `: occurs in the second state if the minimum distance belonging to the right region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-  * `substate b - "left" `: occurs in the second state if the minimum distance belonging to the left region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn right.
-  * `substate c - "left and right" `: occurs in the second state if both the minimum distance belonging to the right region and the minimum distance belonging to the left region are less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-
-* `state 3 - "front-right"`: occurs if the minimum distance belonging to the front-right region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-* `state 4 - "front-left"`: occurs if the minimum distance belonging to the front-left region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn right.
-* `state 5 - "front and front-right"`: occurs if both the minimum distance belonging to the front region and the minimum distance belonging to the front-right region are less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-* `state 6 - "front and front-left"`: occurs if both the minimum distance belonging to the front region and the minimum distance belonging to the front-left region are less than the threshold `DAN_DISTANCE`. The robot is instructed to turn right.
-* `state 7 - "front and front-right and front-left"`: occurs if the minimum distances belonging to all the three frontal regions are less than the threshold `DAN_DISTANCE`. Since given this information it is not really clear where the robot should turn, the side areas are checked as well and three substates are defined:
-  * `substate a - "right"`: occurs in the seventh state if the minimum distance belonging to the right region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-  * `substate b - "left"`: occurs in the seventh state if the minimum distance belonging to the left region is less than the threshold `DAN_DISTANCE`. The robot is instructed to turn right.
-  * `substate c - "left and right"`: occurs in the seventh state if both the minimum distance belonging to the right region and the minimum distance belonging to the left region are less than the threshold `DAN_DISTANCE`. The robot is instructed to turn left.
-
-The linear and angular velocities that are needed to accomplish all these tasks are published by the controller node on the topic `cmd_vel`. The `stageros` node is then responsible for setting them in the simulation.  
-Finally, since the `robot_controller_node` already has access to the `cmd_vel` topic, it is also instructed to act as a server with respect to a service aimed at meeting the requests of the user. In particular, by modifying two coefficients under request (`coeff_l` and `coeff_a`), it can:  
-* start the motion
-* increment/decrement the robot velocities
-* reset both the robot position and the velocities.
-
-The service used to this end is not made available by the simulation node, so it is created. Its structure consists in a request message made of a char variable (`command`) and a response message made of a string variable (`action`).  
-Before passing on to the GUI node, a representation of the controller node and of the communication channels that connects it with the simulation node is hereafter shown:  
-![Rqt_Graph_cut](https://user-images.githubusercontent.com/91536387/145423031-db96b237-c835-47a8-bc22-20a73fab4720.png)  
-Regarding the `robot_gui_node`, its operating principle  is very simple. It asks the user for a command and waits until something is provided. The recognized commands are:
-* `s`: start the robot motion
-* `d`: increment the robot linear velocity
-* `a`: decrement the robot linear velocity
-* `c`: increment the robot angular velocity
-* `z`: decrement the robot angular velocity
-* `r`: reset the robot position and velocities
-* `q`: quit the GUI node
-
-If the string entered is not among these commands, a warning message is issued on the screen. Otherwise, for the first six elements of this list the node sends a request message containing the correspondent character to the server node and prints the latter's response. These actions are ciclically repeated until the command `q`, which makes the node terminate, is entered by the user.
+If the string entered is not among these commands, the request for an input is reiterated.
 
 ## Implementation - controller node code
 The C++ script related to the controller node is composed of a main function, 2 call-back functions and 2 "regular" functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_vel` is issued by the client. The second one refers instead to the subscriber task accomplished by the node and is called every time that a message is published on the `/base_scan` topic.
