@@ -82,7 +82,7 @@ In order to better understand the structure of the control architecture, the fol
 ![Assignment_3-2](https://user-images.githubusercontent.com/91536387/151792336-aff06d4e-4d9e-4d73-a6de-0e9cb28bb80f.png)
 
 ## Implementation - GUI node code
-The Python script related to the GUI node is composed of a main function and 3 auxiliary functions. The first two auxiliary functions refer to the publisher task carried out by the node, respectively with respect to the `/move_base/goal` topic and to the `/move_base/cancel` topic. The third one refers instead to the client task related to the custom service `ChangeMod` accomplished by the node.
+The Python script related to the robot_gui node is composed of a main function and 3 auxiliary functions. The first two auxiliary functions refer to the publisher task carried out by the node, respectively with respect to the `/move_base/goal` topic and to the `/move_base/cancel` topic. The third one refers instead to the client task related to the custom service `ChangeMod` accomplished by the node.
 
 ### Main
 The main function can be described in pseudocode as follows:
@@ -163,12 +163,12 @@ def switch_to_mod(num):
 ```
 
 ## Implementation - GUI node code
-The C++ script related to the controller node is composed of a main function, 2 call-back functions and 2 "regular" functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_vel` is issued by the client. The second one refers instead to the subscriber task accomplished by the node and is called every time that a message is published on the `/base_scan` topic.
+The Python script related to the teleop_mediator node is composed of a main function and 3 call-back functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_mod` is issued by the client. The other two refer instead to the subscriber task accomplished by the node and are called every time that a message is published respectively on the `/scan` topic and on the `/check_vel` topic.
 
 ### Main
 The main function can be described in pseudocode as follows:
-```cpp
-int main (arguments vector dimension, arguments vector){
+```python
+def main():
 	initialize the node with the name "robot_gui_node"
 	setup the NodeHandle
 	initialize and define a client ("client1") that sends requests belonging to the "/change_vel" service
@@ -178,90 +178,6 @@ int main (arguments vector dimension, arguments vector){
 	initialize an iterations counter related to the linear velocity of the robot to 0
 	initialize an iterations counter related to the angular velocity of the robot to 0
 
-	print the instructions to interact with the node on the screen
-
-	while true
-		ask the user for a command
-		retrieve the command entered by the user on the stdin
-
-		if the entered command is "s"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "s"
-			make the first client call the related service with the variable "srv1"
-
-			print the server response on the screen
-
-		else if the entered command is "d"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "d"
-			make the first client call the related service with the variable "srv1"
-
-			if the response is a warning
-				print the server response on the screen in red
-				assign 0 to the iterations counter related to the linear velocity of the robot
-			else
-				print the server response on the screen in green
-				increment the iterations counter related to the linear velocity of the robot
-
-		else if the entered command is "a"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "a"
-			make the first client call the related service with the variable "srv1"
-
-			if the response is a warning
-				print the server response on the screen in red
-				assign 0 to the iterations counter related to the linear velocity of the robot
-			else
-				print the server response on the screen in green
-				decrement the iterations counter related to the linear velocity of the robot
-
-		else if the entered command is "c"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "c"
-			make the first client call the related service with the variable "srv1"
-
-			if the response is a warning
-				print the server response on the screen in red
-				assign 0 to the iterations counter related to the angular velocity of the robot
-			else
-				print the server response on the screen in green
-				increment the iterations counter related to the angular velocity of the robot
-
-		else if the entered command is "z"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "z"
-			make the first client call the related service with the variable "srv1"
-
-			if the response is a warning
-				print the server response on the screen in red
-				assign 0 to the iterations counter related to the angular velocity of the robot
-			else
-				print the server response on the screen in green
-				decrement the iterations counter related to the angular velocity of the robot
-
-		else if the entered command is "r"
-			check if the server related to the "/change_vel" service is up and running
-			fill the request message of the variable "srv1" with the character "r"
-			make the first client call the related service with the variable "srv1"
-
-			print the server response on the screen
-			assign 0 to both the iterations counters
-
-			check if the server related to the "/reset_position" service is up and running
-			make the second client call the related service with the variable "srv2"
-
-		else if the entered command is "q"
-			exit
-		else
-			print "invalid command" on the screen
-
-		if the iterations counter related to the linear velocity of the robot is greater than 3
-			issue a warning message on the screen
-		if the iterations counter related to the angular velocity of the robot is greater than 3
-			issue a warning message on the screen
-
-	return
-}
 ```
 
 ## System Limitations and Possible Improvements
