@@ -81,8 +81,9 @@ In order to better understand the structure of the control architecture, the fol
 
 ![Assignment_3-2](https://user-images.githubusercontent.com/91536387/151792336-aff06d4e-4d9e-4d73-a6de-0e9cb28bb80f.png)
 
-## Implementation - GUI node code
-The Python script related to the robot_gui node is composed of a main function and 3 auxiliary functions. The first two auxiliary functions refer to the publisher task carried out by the node, respectively with respect to the `/move_base/goal` topic and to the `/move_base/cancel` topic. The third one refers instead to the client task related to the custom service `ChangeMod` accomplished by the node.
+## Implementation - robot_gui node code
+The Python script related to the robot_gui node is composed of a main function and 3 auxiliary functions. The first two auxiliary functions refer to the publisher task carried out by the node, respectively with respect to the `/move_base/goal` topic and to the `/move_base/cancel` topic. The third one refers instead to the client task related to the custom service `ChangeMod` accomplished by the node.  
+It is also important to note that both the publishers and the client are initialized and defined in the global environment so as to be available to all the functions. 
 
 ### Main
 The main function can be described in pseudocode as follows:
@@ -108,19 +109,19 @@ def main ():
 							break the loop
 						else:
 							print a warning message on the screen
-					call the set_goal_position() function passing as arguments the coordinates of the entered target position 
+					call the "set_goal_position" function passing as arguments the coordinates of the entered target position 
 
 				if the entered string is "r":
-					call the cancel_goal_position() function
+					call the "cancel_goal_position" function
 					break the loop
 		
 		if the entered string is either "2" or "3":
 			while true:
-				call the switch_to_mod() function passing as an argument the string entered by the user
+				call the "switch_to_mod" function passing as an argument the string entered by the user
 				suggest to the user either to interact with the teleop_twist_keyboard node or to insert "r" (for retunring to the modality selection)
 				
 				if the entered string is "r":
-					call the switch_to_mod() function passing as an argument the string "0"
+					call the "switch_to_mod" function passing as an argument the string "0"
 					break the loop
 		
 		if the entered string is "q":
@@ -133,24 +134,24 @@ def main ():
 The first auxiliary function can be described in pseudocode as follows:
 ```python
 def set_goal_position(x, y):
-	make use of a message of type MoveBaseActionGoal defined as a global variable
+	make use of a message of type "MoveBaseActionGoal" defined as a global variable
 	
 	within the message set the frame with respect to which the target position is defined to map frame
 	within the message set the orientation of the target position to 1
 	within the message set the x coordinate of the target position to the passed x
 	within the message set the y coordinate of the target position to the passed y
 	
-	publish the message
+	publish the message on the "/move_base/goal" topic
 ```
 
 The second auxiliary function can be described in pseudocode as follows:
 ```python
 def cancel_goal_position():
-	make use of a message of type GoalID defined as a global variable
+	make use of a message of type "GoalID" defined as a global variable
 	
 	within the message set the id of the goal position to cancel to "" (empty)
 	
-	publish the message
+	publish the message on the "/move_base/cancel" topic
 ```
 
 The third auxiliary function can be described in pseudocode as follows:
@@ -162,22 +163,90 @@ def switch_to_mod(num):
 		print a warning message on the screen
 ```
 
-## Implementation - GUI node code
-The Python script related to the teleop_mediator node is composed of a main function and 3 call-back functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_mod` is issued by the client. The other two refer instead to the subscriber task accomplished by the node and are called every time that a message is published respectively on the `/scan` topic and on the `/check_vel` topic.
+## Implementation - teleop_mediator node code
+The Python script related to the teleop_mediator node is composed of a main function and 3 call-back functions. The first call-back function refers to the server task carried out by the node and is called every time that a request message belonging to the service `/change_mod` is issued by the client. The other two refer instead to the subscriber task accomplished by the node and are called every time that a message is published respectively on the `/scan` topic and on the `/check_vel` topic.  
+It is also important to note that the publisher that publishes on the "/cmd_vel" topic is initialized and defined in the global environment so as to be available to all the functions. 
 
 ### Main
 The main function can be described in pseudocode as follows:
 ```python
 def main():
-	initialize the node with the name "robot_gui_node"
-	setup the NodeHandle
-	initialize and define a client ("client1") that sends requests belonging to the "/change_vel" service
-	define the custom service variable "srv1" of type "ChangeVel" 
-	initialize and define a client ("client2") that sends requests belonging to the "/reset_positions" service
-	define the service variable "srv2" of type "Empty" 
-	initialize an iterations counter related to the linear velocity of the robot to 0
-	initialize an iterations counter related to the angular velocity of the robot to 0
+	initialize the node with the name "teleop_mediator_node"
+	
+	initialize and define the subscriber that subscribes to the "/scan" topic and assign the "clbk_laser" call-back function to it
+	initialize and define the subscriber that subscribes to the "/check_vel" topic and assign the "clbk_velocity" call-back function to it
+	
+	initialize and define the server that answers to requests belonging to the "/change_mod" service and assign the "clbk_changemod_srv" call-back function to it
+	
+	spin to allow the call-back functions to be called whenever a message arrives on the correspondent topic or service
+```
 
+### Call-back functions
+The first call-back function can be described in pseudocode as follows:
+```python
+def clbk_changemod_srv(request message related to the service "/change_mod"):
+	make use of a message of type "Twist" defined as a global variable
+	
+	store the request message containing the desired modality in a global variable
+	
+	if the desired modality is "0" (default):
+		within the message of type "Twist" set the linear velocity to 0
+		within the message of type "Twist" set the angular velocity to 0
+		publish the message of type "Twist" on the "/cmd_vel" topic
+		
+```
+
+The second auxiliary function can be described in pseudocode as follows:
+```python
+def clbk_laser(message published on the "/scan" topic):
+	make use of a message of type "Twist" defined as a global variable
+	
+	divide the "ranges" field of the message passed as argument in 5 subvectors, each one corresponding to a different region of the robot visual field
+	find the minimum element within each subvector (element that identifies the minimum distance of the robot from a wall in each region)
+	retrieve the minimum between the minimum element of each subvector and 10 and label the obtained value with the name of the corresponding region
+	
+	if the desired modality is "3":
+		if there is an obstacle in front of the robot at a dangerous distance and the imposed linear velocity is positive:
+			within the message of type "Twist" set the linear velocity to 0
+			within the message of type "Twist" set the angular velocity to 0
+			publish the message of type "Twist" on the "/cmd_vel" topic
+			warn the user about the reason why the motors stopped
+			
+		else if there is an obstacle on the right of the robot at a dangerous distance and the imposed angular velocity is negative:
+			within the message of type "Twist" set the linear velocity to 0
+			within the message of type "Twist" set the angular velocity to 0
+			publish the message of type "Twist" on the "/cmd_vel" topic
+			warn the user about the reason why the motors stopped
+			
+		else if there is an obstacle on the left of the robot at a dangerous distance and the imposed angular velocity is positive:
+			within the message of type "Twist" set the linear velocity to 0
+			within the message of type "Twist" set the angular velocity to 0
+			publish the message of type "Twist" on the "/cmd_vel" topic
+			warn the user about the reason why the motors stopped
+		
+		else:
+			publish the message of type "Twist" filled in the "clbk_velocity" function on the "/cmd_vel" topic
+			
+	
+```
+
+The third auxiliary function can be described in pseudocode as follows:
+```python
+def clbk_velocity(message published on the remapped "/check_vel" topic):
+	make use of a message of type "Twist" defined as a global variable
+	
+	if the desired modality is "2":
+		within the message of type "Twist" set the linear velocity to the linear velocity contained in the message passed as argument
+		within the message of type "Twist" set the angular velocity to the angular velocity contained in the message passed as argument
+		publish the message of type "Twist" on the "/cmd_vel" topic
+	
+	if the desired modality is "3":
+		within the message of type "Twist" set the linear velocity to the linear velocity contained in the message passed as argument
+		within the message of type "Twist" set the angular velocity to the angular velocity contained in the message passed as argument
+		(do not publish the message because it has to be checked by the "clbk_laser" function first)
+	
+	if the desired modality is "0" (default):
+		warn the user that (s)he has to change or choose the modality in order to drive the robot with the keyboard 
 ```
 
 ## System Limitations and Possible Improvements
