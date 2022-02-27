@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to final_assignment_controller’s documentation! &mdash; final_assignment_controller 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> final_assignment_controller
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to final_assignment_controller’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#module-scripts.robot_gui">User Interface Module</a></li>
+<li><a class="reference internal" href="#module-scripts.teleop_mediator">Teleop Mediator Module</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">final_assignment_controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Welcome to final_assignment_controller’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="welcome-to-final-assignment-controller-s-documentation">
+<h1>Welcome to final_assignment_controller’s documentation!<a class="headerlink" href="#welcome-to-final-assignment-controller-s-documentation" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="module-scripts.robot_gui">
+<span id="user-interface-module"></span><h1>User Interface Module<a class="headerlink" href="#module-scripts.robot_gui" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-robot_gui"></span><p>This node displays on the terminal a simple GUI, asks the user for the desired control modality and processes the user’s answer.
+If the entered modality is 1, the node directly implements it, by asking for a target position and setting it. On the other hand, if the
+desired control modality is either 2 or 3, a request for setting them is sent to the teleop_mediator module.</p>
+<dl class="simple">
+<dt>Publishes to:</dt><dd><ul class="simple">
+<li><p>/move_base/goal</p></li>
+<li><p>/move_base/cancel</p></li>
+</ul>
+</dd>
+<dt>Client:</dt><dd><ul class="simple">
+<li><p>/change_mod</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.robot_gui.cancel_goal_position">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">cancel_goal_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_gui.html#cancel_goal_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_gui.cancel_goal_position" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called to cancel the previously-set goal position by publishing on the /move_base/cancel topic</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.robot_gui.change_mod">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">change_mod</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;rospy.impl.tcpros_service.ServiceProxy</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#scripts.robot_gui.change_mod" title="Permalink to this definition"></a></dt>
+<dd><p>Global client for requesting the change in the modality in the teleop_mediator module</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.robot_gui.main">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_gui.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_gui.main" title="Permalink to this definition"></a></dt>
+<dd><p>Function that, after printing on the terminal a simple GUI, asks the user for the desired control modality and, based on the answer, acts consequently</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.robot_gui.msg1">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">msg1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">header:</span>&#160;&#160;&#160; <span class="pre">seq:</span> <span class="pre">0</span>&#160;&#160; <span class="pre">stamp:</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">secs:</span> <span class="pre">0</span>&#160;&#160;&#160;&#160; <span class="pre">nsecs:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span>&#160;&#160; <span class="pre">frame_id:</span> <span class="pre">''</span> <span class="pre">goal_id:</span>&#160;&#160;&#160; <span class="pre">stamp:</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">secs:</span> <span class="pre">0</span>&#160;&#160;&#160;&#160; <span class="pre">nsecs:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span>&#160;&#160; <span class="pre">id:</span> <span class="pre">''</span> <span class="pre">goal:</span>&#160;&#160;&#160; <span class="pre">target_pose:</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">header:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">seq:</span> <span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">stamp:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">secs:</span> <span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">nsecs:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">frame_id:</span> <span class="pre">''</span>&#160;&#160;&#160;&#160; <span class="pre">pose:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">position:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">x:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">y:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">z:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">orientation:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">x:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">y:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">z:</span> <span class="pre">0.0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">w:</span> <span class="pre">0.0</span></em><a class="headerlink" href="#scripts.robot_gui.msg1" title="Permalink to this definition"></a></dt>
+<dd><p>Global message published on the /move_base/goal topic (contains the coordinates of the target position)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.robot_gui.msg2">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">msg2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">stamp:</span>&#160;&#160;&#160; <span class="pre">secs:</span> <span class="pre">0</span>&#160;&#160; <span class="pre">nsecs:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span> <span class="pre">id:</span> <span class="pre">''</span></em><a class="headerlink" href="#scripts.robot_gui.msg2" title="Permalink to this definition"></a></dt>
+<dd><p>Global message published on the /move_base/cancel topic (contains the ID of the goal to be cancelled)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.robot_gui.pub1">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">pub1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;rospy.topics.Publisher</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#scripts.robot_gui.pub1" title="Permalink to this definition"></a></dt>
+<dd><p>Global publisher for setting the target position</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.robot_gui.pub2">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">pub2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;rospy.topics.Publisher</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#scripts.robot_gui.pub2" title="Permalink to this definition"></a></dt>
+<dd><p>Global publisher for cancelling the target position</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.robot_gui.set_goal_position">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">set_goal_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_gui.html#set_goal_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_gui.set_goal_position" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called to set a goal position by publishing on the /move_base/goal topic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the target position</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the target position</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.robot_gui.switch_to_mod">
+<span class="sig-prename descclassname"><span class="pre">scripts.robot_gui.</span></span><span class="sig-name descname"><span class="pre">switch_to_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/robot_gui.html#switch_to_mod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.robot_gui.switch_to_mod" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called to send a request related to the /change_mod service to the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>str</em>) – number of the desired control modality stored as a string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.teleop_mediator">
+<span id="teleop-mediator-module"></span><h1>Teleop Mediator Module<a class="headerlink" href="#module-scripts.teleop_mediator" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-teleop_mediator"></span><p>This node implements either modality 2 or modality 3. Both modalities are realized by performing a check over the velocity sent by the teleop_twist_keyboard module.
+In particular, in modality 2 the velocity is directly forwarded to the simulator; whereas in modality 3 the forwarding of the desired velocity takes place only if it does not
+endanger the robot. Otherwise the robot is stopped.
+The switch between the two modalities at issue occurs under request of the robot_gui node.</p>
+<dl class="simple">
+<dt>Subscribes to:</dt><dd><ul class="simple">
+<li><p>/scan</p></li>
+<li><p>/check_vel</p></li>
+</ul>
+</dd>
+<dt>Publishes to:</dt><dd><ul class="simple">
+<li><p>/cmd_vel</p></li>
+</ul>
+</dd>
+<dt>Service:</dt><dd><ul class="simple">
+<li><p>/change_mod</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.clbk_changemod_srv">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">clbk_changemod_srv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/teleop_mediator.html#clbk_changemod_srv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.teleop_mediator.clbk_changemod_srv" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called every time that a new client request related to the /change_mod service is received.</p>
+<p>The number related to the requested modality is stored in a global variable as a string. If the string is “0” the robot is stopped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>req</strong> (<em>str</em>) – number of the desired control modality stored as a string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boolean constant to warn the client about the correct processing of its request</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.clbk_laser">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">clbk_laser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/teleop_mediator.html#clbk_laser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.teleop_mediator.clbk_laser" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called every time that a new message is published on the /scan topic.</p>
+<p>The robot visual field is divided in 5 regions and the minimum distance balonging to each region is retrieved. Based on this information, if the selected modality is 3,
+it is checked whether the desired robot velocity can cause a collision with the walls. If the answer is yes, the robot is stopped; otherwise, the desired robot velocity is set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>struct</em>) – structure containing the output of the robot’s laser scanners</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.clbk_velocity">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">clbk_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/teleop_mediator.html#clbk_velocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.teleop_mediator.clbk_velocity" title="Permalink to this definition"></a></dt>
+<dd><p>Function that is called every time that a new message is published on the /check_vel topic.</p>
+<p>If the selected modality is 2, the requested robot velocity is first stored ina global variable and then set. If instead the selected modality is 3, the desired robot
+velocity is just stored in the global variable, waiting to be checked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>struct</em>) – structure containing the velocity requested by the teleop_twist_keyboard module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.dan_dist">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">dan_dist</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.6</span></em><a class="headerlink" href="#scripts.teleop_mediator.dan_dist" title="Permalink to this definition"></a></dt>
+<dd><p>Safety distance</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.main">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/teleop_mediator.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.teleop_mediator.main" title="Permalink to this definition"></a></dt>
+<dd><p>Function that first initializes and defines the subscribers and the service, and then simply spins to allow the call-back functions to be called whenever a message arrives on the
+correspondent communication channel</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.mod">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">mod</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0'</span></em><a class="headerlink" href="#scripts.teleop_mediator.mod" title="Permalink to this definition"></a></dt>
+<dd><p>Global string variable containing the number of the set modality</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.pub">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">pub</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;rospy.topics.Publisher</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#scripts.teleop_mediator.pub" title="Permalink to this definition"></a></dt>
+<dd><p>Global publisher for setting the robot velocity</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="scripts.teleop_mediator.vel">
+<span class="sig-prename descclassname"><span class="pre">scripts.teleop_mediator.</span></span><span class="sig-name descname"><span class="pre">vel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">linear:</span>&#160;&#160;&#160; <span class="pre">x:</span> <span class="pre">0.0</span>&#160;&#160; <span class="pre">y:</span> <span class="pre">0.0</span>&#160;&#160; <span class="pre">z:</span> <span class="pre">0.0</span> <span class="pre">angular:</span>&#160;&#160;&#160; <span class="pre">x:</span> <span class="pre">0.0</span>&#160;&#160; <span class="pre">y:</span> <span class="pre">0.0</span>&#160;&#160; <span class="pre">z:</span> <span class="pre">0.0</span></em><a class="headerlink" href="#scripts.teleop_mediator.vel" title="Permalink to this definition"></a></dt>
+<dd><p>Global message published on the /cmd_vel topic (contains the robot velocity to be set)</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Emanuele Rambaldi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

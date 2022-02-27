@@ -1,5 +1,29 @@
 #! /usr/bin/env python
 
+"""
+.. module:: teleop_mediator
+    :platform: Unix
+    :synopsis: Python module that implements under request the second and third control modality, by acting as a mediator between the teleop_twist_keyboard node and the simulator
+
+.. moduleauthor:: Emanuele Rambaldi <emanuele.rambaldi3@studio.unibo.it>
+
+This node implements either modality 2 or modality 3. Both modalities are realized by performing a check over the velocity sent by the teleop_twist_keyboard module. 
+In particular, in modality 2 the velocity is directly forwarded to the simulator; whereas in modality 3 the forwarding of the desired velocity takes place only if it does not 
+endanger the robot. Otherwise the robot is stopped. 
+The switch between the two modalities at issue occurs under request of the robot_gui node.
+
+Subscribes to:
+    - /scan
+    - /check_vel
+
+Publishes to:
+    - /cmd_vel
+
+Service:
+    - /change_mod
+
+"""
+
 import rospy # import rospy to use ros functionalities
 from geometry_msgs.msg import Twist # import the type of message that is exchanged both on the /cmd_vel topic and on the /check_vel topic
 from sensor_msgs.msg import LaserScan # import the type of message that is exchanged on the /scan topic
@@ -7,10 +31,16 @@ from final_assignment_controller.srv import ChangeMod, ChangeModResponse # impor
 
 # Publisher
 pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1) # initialize and define the publisher that publishes on the /cmd_vel topic
+"""
+Global publisher for setting the robot velocity
+"""
 
 # GLOBAL CONSTANTS
 
 dan_dist = 0.6
+"""
+Safety distance
+"""
 
 # GLOBAL VARIABLES
 
@@ -22,9 +52,15 @@ regions_ = {
     'left': 0,
 }
 mod = "0"
+"""
+Global string variable containing the number of the set modality
+"""
 
 # Published message
 vel = Twist()
+"""
+Global message published on the /cmd_vel topic (contains the robot velocity to be set)
+"""
 
 # Auxiliary global variables for the GUI aesthetic
 i = 0
@@ -34,6 +70,19 @@ i = 0
 
 # function that is called every time that a new client request related to the /change_mod service is received
 def clbk_changemod_srv(req):
+
+    """Function that is called every time that a new client request related to the /change_mod service is received. 
+
+    The number related to the requested modality is stored in a global variable as a string. If the string is "0" the robot is stopped.
+
+    Args:
+        req (str): number of the desired control modality stored as a string
+
+    Returns:
+        True: boolean constant to warn the client about the correct processing of its request
+
+    """
+
     global mod
     global vel 
 
@@ -50,6 +99,17 @@ def clbk_changemod_srv(req):
 
 # function that is called every time that a new message is published on the /scan topic
 def clbk_laser(msg):
+
+    """Function that is called every time that a new message is published on the /scan topic.
+ 
+    The robot visual field is divided in 5 regions and the minimum distance balonging to each region is retrieved. Based on this information, if the selected modality is 3, 
+    it is checked whether the desired robot velocity can cause a collision with the walls. If the answer is yes, the robot is stopped; otherwise, the desired robot velocity is set.
+
+    Args:
+        msg (struct): structure containing the output of the robot's laser scanners
+
+    """
+
     global regions_
     global vel
 
@@ -93,6 +153,17 @@ def clbk_laser(msg):
 
 # function that is called every time that a new message is published on the /check_vel topic
 def clbk_velocity(msg):
+
+    """Function that is called every time that a new message is published on the /check_vel topic. 
+
+    If the selected modality is 2, the requested robot velocity is first stored ina global variable and then set. If instead the selected modality is 3, the desired robot 
+    velocity is just stored in the global variable, waiting to be checked.
+
+    Args:
+        msg (struct): structure containing the velocity requested by the teleop_twist_keyboard module 
+
+    """
+
     global vel
     global i
 
@@ -116,6 +187,10 @@ def clbk_velocity(msg):
 # MAIN FUNCTION
 
 def main():
+
+    """Function that first initializes and defines the subscribers and the service, and then simply spins to allow the call-back functions to be called whenever a message arrives on the 
+    correspondent communication channel
+    """
 
     rospy.init_node('teleop_mediator_node') # initialize the node with the name 'teleop_mediator_node'
 
