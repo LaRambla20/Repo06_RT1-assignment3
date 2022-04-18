@@ -39,7 +39,7 @@ $ roslaunch final_assignment_controller final_assignment_sim.launch
 ```
 * open another terminal window, navigate to your ROS workspace and execute:
 ```bash
-$ roslaunch final_assignment_controller control_architecture_sim.launch
+$ roslaunch final_assignment_controller control_architecture.launch
 ```
 ### About the simulator and the algorithms
 This assignment relies on some software facilities, the most relevant of which are:
