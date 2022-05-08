@@ -1,5 +1,5 @@
 # Third Reasearch Track 1 Assignment
-The repository in which this README is contains a ROS package, named `final_assignment_controller` and composed by four folders, a text file and a file with extension .xml: 
+The repository in which this README is contains a folder and a ROS package. The first one is named `docs` and contains the documentation generated starting from the comments in the code by the tool `Sphinx`(link to visualize this documentation:). The second one instead is named `final_assignment_controller` and is composed by four folders, a text file and a file with extension .xml: 
 
 * `include`: folder for the management of included packages (not used).
 * `launch`: folder that contains two launch files (`final_assignment_sim.launch` and `control_architecture.launch`): one whose aim is to launch the simulation environment and both the SLAM and path-planning algorithms; the other whose aim is to launch the implemented control architecture.
